@@ -21,7 +21,7 @@ router.post('/accounts/register', async (req, res) => {
 
   const countryCode = '84';
   const phoneNumber = String(req.body.phoneNumber).replace(/[^\d]/g, '');
-  const uid = countryCode + phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
+  const uid = countryCode + (phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber);
   const displayName = String(req.body.displayName).trim();
   const photoURL = String(req.body.photoUrl).trim();
 
@@ -42,7 +42,7 @@ router.post('/accounts/requestOtp', async (req, res) => {
 
   const countryCode = '84';
   const phoneNumber = String(req.body.phoneNumber).replace(/[^\d]/g, '');
-  const uid = countryCode + phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
+  const uid = countryCode + (phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber);
 
   try {
     const userRecord = await admin.auth().getUser(uid);
@@ -69,7 +69,7 @@ router.post('/accounts/verifyOtp', async (req, res) => {
   const countryCode = '84';
   const phoneNumber = String(req.body.phoneNumber).replace(/[^\d]/g, '');
   const otpCode = parseInt(req.body.otpCode);
-  const uid = countryCode + phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber;
+  const uid = countryCode + (phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber);
 
   try {
     const userRecord = await admin.auth().getUser(uid);
