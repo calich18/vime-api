@@ -52,11 +52,11 @@ router.post('/accounts/requestOtp', async (req, res) => {
       .update({ code: code, codeValid: true }, () => {
         res.send({ success: true });
       });
-    const message = await twilio.messages.create({
-      body: 'Your verification code is ' + code,
-      to: '+' + uid,
-      from: '+12563054478'
-    });
+    // const message = await twilio.messages.create({
+    //   body: 'Your verification code is ' + code,
+    //   to: '+' + uid,
+    //   from: '+12563054478'
+    // });
   } catch (error) {
     return res.status(500).send({ error });
   }
