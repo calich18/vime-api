@@ -15,6 +15,7 @@ admin.initializeApp({
 const router = express.Router();
 
 router.post('/accounts/register', async (req, res) => {
+  //const { phoneNumber, displayName, photoUrl } = req.body;
   if (!req.body.phoneNumber || !req.body.displayName || !req.body.photoUrl) {
     return res.status(400).send({ error: 'Bad Input' });
   }
@@ -47,15 +48,15 @@ router.post('/accounts/requestOtp', async (req, res) => {
   try {
     const userRecord = await admin.auth().getUser(uid);
     const code = Math.floor(Math.random() * 8999 + 1000);
+    admin.database().ref('users/' + uid)
+      .update({ code: code, codeValid: true }, () => {
+        res.send({ success: true });
+      });
     const message = await twilio.messages.create({
       body: 'Your verification code is ' + code,
       to: '+' + uid,
       from: '+12563054478'
     });
-    admin.database().ref('users/' + uid)
-      .update({ code: code, codeValid: true }, () => {
-        res.send({ success: true });
-      });
   } catch (error) {
     return res.status(500).send({ error });
   }
