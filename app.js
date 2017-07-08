@@ -15,8 +15,7 @@ admin.initializeApp({
 const router = express.Router();
 
 router.post('/accounts/register', async (req, res) => {
-  //const { phoneNumber, displayName, photoUrl } = req.body;
-  if (!req.body.phoneNumber || !req.body.displayName || !req.body.photoUrl) {
+  if (!req.body.phoneNumber || !req.body.displayName) {
     return res.status(400).send({ error: 'Bad Input' });
   }
 
@@ -24,11 +23,10 @@ router.post('/accounts/register', async (req, res) => {
   const phoneNumber = String(req.body.phoneNumber).replace(/[^\d]/g, '');
   const uid = countryCode + (phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber);
   const displayName = String(req.body.displayName).trim();
-  const photoURL = String(req.body.photoUrl).trim();
 
   try {
     const userRecord = await admin.auth().createUser({
-      uid, displayName, photoURL
+      uid, displayName
     });
     res.send(userRecord);
   } catch (error) {
