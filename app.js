@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const admin = require("firebase-admin");
+const admin = require('firebase-admin');
 const serviceAccount = require('./service-account-key.json');
-const twilio = require('./twilio');
+const axios = require('axios');
 
 const app = express();
 app.use(bodyParser.json());
@@ -46,15 +46,21 @@ router.post('/accounts/requestOtp', async (req, res) => {
   try {
     const userRecord = await admin.auth().getUser(uid);
     const code = Math.floor(Math.random() * 8999 + 1000);
+
+    await axios.get('http://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_get', {
+      params: {
+        Phone: uid,
+        Content: 'Your Vime verification code is' + code,
+        ApiKey: 'xxx',
+        SecretKey: 'xxx',
+        SmsType: '6'
+      }
+    });
+
     admin.database().ref('users/' + uid)
       .update({ code: code, codeValid: true }, () => {
         res.send({ success: true });
       });
-    // const message = await twilio.messages.create({
-    //   body: 'Your verification code is ' + code,
-    //   to: '+' + uid,
-    //   from: '+12563054478'
-    // });
   } catch (error) {
     return res.status(500).send({ error });
   }
