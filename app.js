@@ -39,6 +39,7 @@ router.post('/accounts/requestOtp', async (req, res) => {
     return res.status(400).send({ error: 'You must provide a phone number' });
   }
 
+  const mode = req.body.mode || 'prod';
   const countryCode = '84';
   const phoneNumber = String(req.body.phoneNumber).replace(/[^\d]/g, '');
   const uid = countryCode + (phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber);
@@ -47,15 +48,17 @@ router.post('/accounts/requestOtp', async (req, res) => {
     const userRecord = await admin.auth().getUser(uid);
     const code = Math.floor(Math.random() * 8999 + 1000);
 
-    await axios.get('http://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_get', {
-      params: {
-        Phone: uid,
-        Content: 'Your Vime verification code is' + code,
-        ApiKey: 'xxx',
-        SecretKey: 'xxx',
-        SmsType: '6'
-      }
-    });
+    if (mode == 'prod') {
+      await axios.get('http://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_get', {
+        params: {
+          Phone: uid,
+          Content: 'Your Vime verification code is ' + code,
+          ApiKey: 'xxx',
+          SecretKey: 'xxx',
+          SmsType: '4'
+        }
+      });
+    }
 
     admin.database().ref('users/' + uid)
       .update({ code: code, codeValid: true }, () => {
